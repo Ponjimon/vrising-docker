@@ -29,4 +29,6 @@ RUN steamcmd \
 
 # WORKDIR ${INSTALL_DIR}
 RUN mkdir -p server-data
-ENTRYPOINT ["tini", "--", "xvfb-run", "-a", "wine", "./VRisingServer.exe", "-persistentDataPath", "./server-data"]
+COPY docker-entrypoint.sh docker-entrypoint.sh
+RUN chmod +x docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
