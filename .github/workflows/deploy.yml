@@ -29,6 +29,7 @@ jobs:
         username: ${{ secrets.AWS_ACCESS_KEY_ID }}
         password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     - name: Build, tag, and push image to Amazon ECR
+      if: github.ref == 'ref/heads/main'
       env:
         ECR_REGISTRY: public.ecr.aws/r0w6f3t3
         ECR_REPOSITORY: vrising
@@ -36,4 +37,13 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
+    - name: Build, tag, and push image to Amazon ECR (other)
+      if: github.ref != 'ref/heads/main'
+      env:
+        ECR_REGISTRY: public.ecr.aws/r0w6f3t3
+        ECR_REPOSITORY: vrising
+        IMAGE_TAG: ${{ github.ref_name }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
