@@ -2,6 +2,9 @@
 # V Rising Docker Image
 This is a Docker image for V Rising that uses Wine to run it. Props to [@fragsoc](https://github.com/fragsoc) for making this possible by using [fragsoc/steamcmd-wine-xvfb](https://github.com/FragSoc/steamcmd-wine-xvfb-docker).
 
+> There is no dedicated server for Linux yet, but there will be one [soon™](https://github.com/StunlockStudios/vrising-dedicated-server-instructions/issues/1#issuecomment-1129496258).  
+> As soon as there is one, this image will be updated accordingly.
+
 ## Usage
 You can build the Docker image yourself (see below) or use the pre-built image:
 
@@ -39,7 +42,7 @@ docker build -t my-vrising-server:latest .
 docker push my.regist.try/my-vrising-server:latest
 ```
 
-| **Note**: Do not actually run the command above as is. It's just for demonstration purposes.
+> **Note**: Do not actually run the command above as is. It's just for demonstration purposes.
 
 ## Good to Know
 
