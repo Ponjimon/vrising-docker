@@ -13,10 +13,13 @@ You can build the Docker image yourself (see below) or use the pre-built image:
 To run it, you have to mount a volume and attach it to `/vrising/server-data`.
 Inside that volume, the server will store the save data and settings.
 
-
 `docker run -it -p 27015:27015/udp -p 27016:27016/udp -v /home/vrising/server-data:/vrising/server-data public.ecr.aws/r0w6f3t3/vrising:latest`
 
 Obviously, you would have to adapt the ports and/or volume name if you changed the settings.
+
+Or you can use `docker-compose` and run `docker-compose up -d`. The `docker-compose.yaml` file assume that there is a directory `vrising-server` under `${HOME}` as it will be where the server settings and saves are stored.
+
+Remember to open the ports 27015 and 27016 in `UDP` in your firewall or clients won't be able to reach your docker container.
 
 ### Step by Step
 
