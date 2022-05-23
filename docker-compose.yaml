@@ -1,0 +1,11 @@
+version: "3"
+
+services: 
+  vrising: 
+    image: public.ecr.aws/r0w6f3t3/vrising:latest
+    volumes: 
+      - $HOME/vrising-server:/vrising/server-data
+    ports: 
+      - "27015-27016:27015-27016/udp"
+    restart: unless-stopped
+    stop_grace_period: 2m
