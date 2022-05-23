@@ -19,7 +19,7 @@ Obviously, you would have to adapt the ports and/or volume name if you changed t
 
 Or you can use `docker-compose` and run `docker-compose up -d`. The `docker-compose.yaml` file assume that there is a directory `vrising-server` under `${HOME}` as it will be where the server settings and saves are stored.
 
-Remember to open the ports 27015 and 27016 in `UDP` in your firewall or clients won't be able to reach your docker container.
+Remember to open the ports `27015` and `27016` in `UDP` in your firewall or clients won't be able to reach your docker container.
 
 ### Step by Step
 
