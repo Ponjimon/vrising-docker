@@ -3,6 +3,8 @@ version: "3"
 services: 
   vrising: 
     image: public.ecr.aws/r0w6f3t3/vrising:latest
+    args:
+        STEAM_EPOC:
     volumes: 
       - $HOME/vrising-server:/vrising/server-data
     ports: 
