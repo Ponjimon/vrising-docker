@@ -38,21 +38,23 @@ jobs:
       run: |
         echo '::set-output name=buildid::'$(curl -X GET "https://api.steamcmd.net/v1/info/${{ env.APP_ID }}" | jq -r --arg APP_ID "${{ env.APP_ID }}" '.data[$APP_ID].depots.branches.public.buildid')
     - name: Build, tag, and push image to Amazon ECR
-      if: github.ref == 'ref/heads/main' && github.event_name == 'repository_dispatch'
+      if: github.ref == 'ref/heads/main'
       env:
         ECR_REGISTRY: public.ecr.aws/r0w6f3t3
         ECR_REPOSITORY: vrising
-        IMAGE_TAG: ${{ steps.buildid.outputs.buildid }}
+        IMAGE_TAG_BUILD: ${{ steps.buildid.outputs.buildid }}
+        IMAGE_TAG_COMMIT: ${{ github.ref_name }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:build-$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:build-$IMAGE_TAG_BUILD .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:build-$IMAGE_TAG_COMMIT .
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
-    - name: Build, tag, and push image to Amazon ECR (other)
-      if: github.ref != 'ref/heads/main' && github.event_name != 'repository_dispatch'
+    - name: Build, tag, and push image to Amazon ECR
+      if: github.ref != 'ref/heads/main'
       env:
         ECR_REGISTRY: public.ecr.aws/r0w6f3t3
         ECR_REPOSITORY: vrising
-        IMAGE_TAG: ${{ github.ref_name }}
+        IMAGE_TAG: ${{ github.ref }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:commit-$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:build-${IMAGE_TAG##*/} .
         docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
