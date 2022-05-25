@@ -14,12 +14,12 @@ jobs:
     steps:
       - name: Get App Info
         run: |
-          curl -X GET "https://api.steamcmd.net/v1/info/${APP_ID}" -o data.json
+          curl -X GET "https://api.steamcmd.net/v1/info/${{ env.APP_ID }}" -o data.json
           cat data.json
       - name: Parse Data
         id: parsed_data
         run: |
-          echo '::set-output name=public::'$(jq -r --arg APP_ID "${APP_ID}" '.data.[$APP_ID].depots.branches.public' data.json)
+          echo '::set-output name=public::'$(jq -r --arg APP_ID "${{ env.APP_ID }}" '.data.[$APP_ID].depots.branches.public' data.json)
           cat data.json
       - name: Fetch Cache
         id: cache
