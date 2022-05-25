@@ -6,11 +6,9 @@ RUN apt-get update -y \
  && rm -rf /var/lib/apt/lists/*
 WORKDIR /
 ENV INSTALL_DIR="/vrising"
-ENV HOME=${INSTALL_DIR}
 RUN mkdir -p $INSTALL_DIR
 ARG APPID=1829350
 ARG STEAM_BETAS
-RUN ls -lha $INSTALL_DIR
 RUN steamcmd \
         +force_install_dir $INSTALL_DIR \
         +login anonymous \
@@ -29,6 +27,4 @@ ARG TINI_VERSION=v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
 RUN chmod +x /usr/bin/tini
 WORKDIR /vrising
-RUN echo $(id)
-RUN ls -lha .
-ENTRYPOINT ["tini", "--", "xvfb-run", "-a", "wine", "./VRisingServer.exe", "-persistentDataPath", "./server-data"]
+CMD ["tini", "--", "xvfb-run", "-a", "wine", "./VRisingServer.exe", "-persistentDataPath", "./server-data"]

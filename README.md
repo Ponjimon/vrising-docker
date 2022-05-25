@@ -18,6 +18,12 @@ Inside that volume, the server will store the save data and settings.
 
 Obviously, you would have to adapt the ports and/or volume name if you changed the settings.
 
+> **Note**: If the local user's UID/GID is **not** 1000, you need to run the container like this:
+> 
+> ```docker run -it -p 27015:27015/udp -p 27016:27016/udp -e LOCAL_USER_ID=`id -u $USER` -e LOCAL_GROUP_ID=`id -g $USER` -v /home/vrising/server-data:/vrising/server-data public.ecr.aws/r0w6f3t3/vrising:latest```
+>
+> This makes sure that there won't be any permission conflicts.
+
 ### Step by Step
 
 We assume we're logged in to a Linux/Ubuntu machine under the user `vrising`.
