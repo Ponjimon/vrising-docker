@@ -7,6 +7,11 @@ on:
     paths:
       - Dockerfile
   workflow_dispatch:
+  repository_dispatch:
+    types: [new-version]
+
+env:
+  APP_ID: 1829350
 
 jobs:
   build:
@@ -28,12 +33,26 @@ jobs:
         registry: public.ecr.aws
         username: ${{ secrets.AWS_ACCESS_KEY_ID }}
         password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Get Latest Build ID
+      id: buildid
+      run: |
+        echo '::set-output name=buildid::'$(curl -X GET "https://api.steamcmd.net/v1/info/${{ env.APP_ID }}" | jq -r --arg APP_ID "${{ env.APP_ID }}" '.data[$APP_ID].depots.branches.public.buildid')
     - name: Build, tag, and push image to Amazon ECR
+      if: github.ref == 'ref/heads/main' && github.event_name == 'repository_dispatch'
       env:
         ECR_REGISTRY: public.ecr.aws/r0w6f3t3
         ECR_REPOSITORY: vrising
-        IMAGE_TAG: ${{ github.sha }}
+        IMAGE_TAG: ${{ steps.buildid.outputs.buildid }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:build-$IMAGE_TAG .
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
+    - name: Build, tag, and push image to Amazon ECR (other)
+      if: github.ref != 'ref/heads/main' && github.event_name != 'repository_dispatch'
+      env:
+        ECR_REGISTRY: public.ecr.aws/r0w6f3t3
+        ECR_REPOSITORY: vrising
+        IMAGE_TAG: ${{ github.ref_name }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:commit-$IMAGE_TAG .
         docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY

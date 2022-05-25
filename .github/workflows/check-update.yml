@@ -1,8 +1,10 @@
 name: Check Update
 
 on:
-  push:
+  schedule:
+    - cron: '*/5 * * * *'
   workflow_dispatch:
+
 
 env:
   APP_ID: 1829350
@@ -15,18 +17,18 @@ jobs:
       - name: Get App Info
         run: |
           curl -X GET "https://api.steamcmd.net/v1/info/${{ env.APP_ID }}" -o data.json
-          cat data.json
-      - name: Parse Data
-        id: parsed_data
+      - name: Get Public Build
         run: |
-          echo '::set-output name=public::'$(jq -r --arg APP_ID "${{ env.APP_ID }}" '.data.[$APP_ID].depots.branches.public' data.json)
-          cat data.json
+          echo $(jq -r --arg APP_ID "${{ env.APP_ID }}" '.data[$APP_ID].depots.branches.public' data.json) > data.json
       - name: Fetch Cache
         id: cache
         uses: actions/cache@v2
         with:
           path: data.json
           key: ${{ hashFiles('data.json') }}
-      - name: Compare Data
+      - name: Trigger New Build
+        uses: peter-evans/repository-dispatch@v2
         if: steps.cache.outputs.cache-hit != 'true'
-        run: echo "test"
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          event-type: new-version
