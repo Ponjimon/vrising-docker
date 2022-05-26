@@ -37,7 +37,7 @@ jobs:
       uses: CyberAndrii/setup-steamcmd@v1
     - name: Get Latest Build ID
       id: buildid
-      run: >
+      run: |
           BUILD_ID=$(steamcmd +login anonymous +app_info_update 1 +app_info_print "${{ env.APP_ID }}" +quit | grep -EA 1000 "^\s+\"branches\"$" | grep -EA 5 "^\s+\"public\"$" | grep -m 1 -EB 10 "^\s+}$" | grep -E "^\s+\"buildid\"\s+" | tr '[:blank:]"' ' ' | tr -s ' ' | cut -d' ' -f3)
           echo $BUILD_ID
           exit 1
