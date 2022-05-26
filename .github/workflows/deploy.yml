@@ -41,7 +41,7 @@ jobs:
         retry_on: error
         max_attempts: 3
         command: >-
-          CONTENT=$(curl -X GET -f --silent --show-error "https://api.steamcmd.net/v1/info/${{ env.APP_ID }})
+          CONTENT=$(curl -X GET -f --silent --show-error "https://api.steamcmd.net/v1/info/${{ env.APP_ID }}")
           BUILD_ID=$(echo ${CONTENT} | jq -r --arg APP_ID "${{ env.APP_ID }}" '.data[$APP_ID].depots.branches.public.buildid')
           echo '::set-output name=buildid::'${BUILD_ID}
     - name: Build, tag, and push image to Amazon ECR
