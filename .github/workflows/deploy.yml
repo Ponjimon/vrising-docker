@@ -38,7 +38,6 @@ jobs:
       id: buildid
       with:
         timeout_seconds: 30
-        retry_on: error
         max_attempts: 3
         command: >-
           CONTENT=$(curl -X GET -f --silent --show-error "https://api.steamcmd.net/v1/info/${{ env.APP_ID }}")
