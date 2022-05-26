@@ -34,9 +34,16 @@ jobs:
         username: ${{ secrets.AWS_ACCESS_KEY_ID }}
         password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     - name: Get Latest Build ID
+      uses: nick-fields/retry@v2
       id: buildid
-      run: |
-        echo '::set-output name=buildid::'$(curl -X GET "https://api.steamcmd.net/v1/info/${{ env.APP_ID }}" | jq -r --arg APP_ID "${{ env.APP_ID }}" '.data[$APP_ID].depots.branches.public.buildid')
+      with:
+        retry_on: error
+        max_attempts: 3
+        shell: cmd
+        command: >-
+          CONTENT=$(curl -X GET -f --silent --show-error "https://api.steamcmd.net/v1/info/${{ env.APP_ID }})
+          BUILD_ID=$(echo ${CONTENT} | jq -r --arg APP_ID "${{ env.APP_ID }}" '.data[$APP_ID].depots.branches.public.buildid')
+          echo '::set-output name=buildid::'${BUILD_ID}
     - name: Build, tag, and push image to Amazon ECR
       if: github.ref == 'refs/heads/main'
       env:
@@ -46,7 +53,7 @@ jobs:
         IMAGE_TAG_COMMIT: ${{ github.ref_name }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:build-$IMAGE_TAG_BUILD .
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:build-$IMAGE_TAG_COMMIT .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:commit-$IMAGE_TAG_COMMIT .
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
     - name: Build, tag, and push image to Amazon ECR
