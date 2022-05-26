@@ -19,6 +19,8 @@ Inside that volume, the server will store the save data and settings.
  ```console
  docker run -it -p 27015:27015/udp -p 27016:27016/udp -v /home/vrising/server-data:/vrising/server-data public.ecr.aws/r0w6f3t3/vrising:latest
  ```
+ 
+ Alternatively, you can use `docker-compose`. Simply run `docker-compose up -d`to spin up a container. The `docker-compose.yaml` file assumes that there is a directory `${home}/vrising-server` in which the container will mount a volum and store the saves and you can add your custom settings.
 
 Obviously, you would have to adapt the ports and/or volume name if you changed the settings.
 
