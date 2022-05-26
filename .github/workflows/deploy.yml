@@ -47,10 +47,10 @@ jobs:
         ECR_REGISTRY: public.ecr.aws/r0w6f3t3
         ECR_REPOSITORY: vrising
         IMAGE_TAG_BUILD: ${{ steps.buildid.outputs.buildid }}
-        IMAGE_TAG_COMMIT: ${{ github.ref_name }}
+        IMAGE_TAG_BRANCH: ${{ github.ref_name }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:build-$IMAGE_TAG_BUILD .
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:commit-$IMAGE_TAG_COMMIT .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:branch-$IMAGE_TAG_BRANCH .
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
     - name: Build, tag, and push image to Amazon ECR
@@ -58,7 +58,7 @@ jobs:
       env:
         ECR_REGISTRY: public.ecr.aws/r0w6f3t3
         ECR_REPOSITORY: vrising
-        IMAGE_TAG: ${{ github.ref }}
+        IMAGE_TAG: ${{ github.ref_name }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:branch-${IMAGE_TAG##*/} .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:branch-${IMAGE_TAG} .
         docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
