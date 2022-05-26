@@ -37,6 +37,7 @@ jobs:
       uses: nick-fields/retry@v2
       id: buildid
       with:
+        timeout_seconds: 30
         retry_on: error
         max_attempts: 3
         shell: cmd
