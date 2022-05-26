@@ -33,15 +33,12 @@ jobs:
         registry: public.ecr.aws
         username: ${{ secrets.AWS_ACCESS_KEY_ID }}
         password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Setup SteamCMD
+      uses: CyberAndrii/setup-steamcmd@v1
     - name: Get Latest Build ID
-      uses: nick-fields/retry@v2
       id: buildid
-      with:
-        timeout_seconds: 30
-        max_attempts: 3
-        command: >-
-          CONTENT=$(curl -X GET -f --silent --show-error "https://api.steamcmd.net/v1/info/${{ env.APP_ID }}")
-          BUILD_ID=$(echo ${CONTENT} | jq -r --arg APP_ID "${{ env.APP_ID }}" '.data[$APP_ID].depots.branches.public.buildid')
+      run: >
+          BUILD_ID=$(steamcmd +login anonymous +app_info_update 1 +app_info_print "${{ env.APP_ID }}" +quit | grep -EA 1000 "^\s+\"branches\"$" | grep -EA 5 "^\s+\"public\"$" | grep -m 1 -EB 10 "^\s+}$" | grep -E "^\s+\"buildid\"\s+" | tr '[:blank:]"' ' ' | tr -s ' ' | cut -d' ' -f3)
           echo '::set-output name=buildid::'${BUILD_ID}
     - name: Build, tag, and push image to Amazon ECR
       if: github.ref == 'refs/heads/main'

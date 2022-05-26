@@ -14,12 +14,11 @@ jobs:
     name: Check Update
     runs-on: ubuntu-latest
     steps:
-      - name: Get App Info
+      - name: Setup SteamCMD
+        uses: CyberAndrii/setup-steamcmd@v1
+      - name: Get Public Build ID
         run: |
-          curl -X GET "https://api.steamcmd.net/v1/info/${{ env.APP_ID }}" -o data.json
-      - name: Get Public Build
-        run: |
-          echo $(jq -r --arg APP_ID "${{ env.APP_ID }}" '.data[$APP_ID].depots.branches.public' data.json) > data.json
+          echo $(steamcmd +login anonymous +app_info_update 1 +app_info_print "${{ env.APP_ID }}" +quit | grep -EA 1000 "^\s+\"branches\"$" | grep -EA 5 "^\s+\"public\"$" | grep -m 1 -EB 10 "^\s+}$" | grep -E "^\s+\"buildid\"\s+" | tr '[:blank:]"' ' ' | tr -s ' ' | cut -d' ' -f3) > data.json
       - name: Fetch Cache
         id: cache
         uses: actions/cache@v2
