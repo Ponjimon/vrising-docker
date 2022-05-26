@@ -1,0 +1,33 @@
+name: Check Update
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+
+env:
+  APP_ID: 1829350
+
+jobs:
+  check:
+    name: Check Update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SteamCMD
+        uses: CyberAndrii/setup-steamcmd@v1
+      - name: Get Public Build ID
+        run: |
+          echo $(steamcmd +login anonymous +app_info_update 1 +app_info_print "${{ env.APP_ID }}" +quit | grep -EA 1000 "^\s+\"branches\"$" | grep -EA 5 "^\s+\"public\"$" | grep -m 1 -EB 10 "^\s+}$" | grep -E "^\s+\"buildid\"\s+" | tr '[:blank:]"' ' ' | tr -s ' ' | cut -d' ' -f3) > data.json
+      - name: Fetch Cache
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: data.json
+          key: ${{ hashFiles('data.json') }}
+      - name: Trigger New Build
+        uses: peter-evans/repository-dispatch@v2
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          event-type: new-version
