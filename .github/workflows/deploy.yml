@@ -38,7 +38,7 @@ jobs:
       run: |
         echo '::set-output name=buildid::'$(curl -X GET "https://api.steamcmd.net/v1/info/${{ env.APP_ID }}" | jq -r --arg APP_ID "${{ env.APP_ID }}" '.data[$APP_ID].depots.branches.public.buildid')
     - name: Build, tag, and push image to Amazon ECR
-      if: github.ref == 'ref/heads/main'
+      if: github.ref == 'refs/heads/main'
       env:
         ECR_REGISTRY: public.ecr.aws/r0w6f3t3
         ECR_REPOSITORY: vrising
@@ -50,7 +50,7 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
         docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
     - name: Build, tag, and push image to Amazon ECR
-      if: github.ref != 'ref/heads/main'
+      if: github.ref != 'refs/heads/main'
       env:
         ECR_REGISTRY: public.ecr.aws/r0w6f3t3
         ECR_REPOSITORY: vrising
