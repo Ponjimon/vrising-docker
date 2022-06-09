@@ -9,7 +9,7 @@ This is a Docker image for V Rising that uses Wine to run it.
 You can build the Docker image yourself (see below) or use the pre-built image:
 
  ```console
-docker pull public.ecr.aws/r0w6f3t3/vrising:latest
+docker pull public.ecr.aws/ponjimon/vrising:latest
  ```
 
 To run it, you have to mount a volume and attach it to `/vrising/server-data`.
@@ -17,7 +17,7 @@ Inside that volume, the server will store the save data and settings.
 
 
  ```console
- docker run -it -p 27015:27015/udp -p 27016:27016/udp -v /home/vrising/server-data:/vrising/server-data public.ecr.aws/r0w6f3t3/vrising:latest
+ docker run -it -p 27015:27015/udp -p 27016:27016/udp -v /home/vrising/server-data:/vrising/server-data public.ecr.aws/ponjimon/vrising:latest
  ```
  
  Alternatively, you can use `docker-compose`. Simply run `docker-compose up -d` to spin up a container. The `docker-compose.yaml` file assumes that there is a directory `${HOME}/vrising-server` in which the container will mount a volume and store the saves where you can add your custom settings.
@@ -27,7 +27,7 @@ Obviously, you would have to adapt the ports and/or volume name if you changed t
 > **Note**: If the local user's UID/GID is **not** 1000, you need to run the container like this:
 > 
 > ```console
-> docker run -it -p 27015:27015/udp -p 27016:27016/udp -e LOCAL_USER_ID=`id -u $USER` -e LOCAL_GROUP_ID=`id -g $USER` -v /home/vrising/server-data:/vrising/server-data public.ecr.aws/r0w6f3t3/vrising:latest
+> docker run -it -p 27015:27015/udp -p 27016:27016/udp -e LOCAL_USER_ID=`id -u $USER` -e LOCAL_GROUP_ID=`id -g $USER` -v /home/vrising/server-data:/vrising/server-data public.ecr.aws/ponjimon/vrising:latest
 > ```
 >
 > This makes sure that there won't be any permission conflicts.
@@ -39,7 +39,7 @@ We assume we're logged in to a Linux/Ubuntu machine under the user `vrising`.
 1. Pull latest Docker image:
 
      ```console
-     docker pull public.ecr.aws/r0w6f3t3/vrising:latest
+     docker pull public.ecr.aws/ponjimon/vrising:latest
      ```
 2. Create a folder anywhere on your system where you want the save files and the server settings to be. Let's assume the home directory:
 
@@ -50,7 +50,7 @@ We assume we're logged in to a Linux/Ubuntu machine under the user `vrising`.
 4. Start the server:
 
      ```console
-     docker run -it -p 27015:27015/udp -p 27016:27016/udp -v /home/vrising/server-data:/vrising/server-data public.ecr.aws/r0w6f3t3/vrising:latest
+     docker run -it -p 27015:27015/udp -p 27016:27016/udp -v /home/vrising/server-data:/vrising/server-data public.ecr.aws/ponjimon/vrising:latest
      ```
 
 ### Build your own

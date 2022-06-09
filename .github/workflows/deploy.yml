@@ -18,47 +18,47 @@ jobs:
     name: Build Image
     runs-on: ubuntu-latest
     steps:
-    - name: Check out code
-      uses: actions/checkout@v2
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: docker/login-action@v2
-      with:
-        registry: public.ecr.aws
-        username: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    - name: Setup SteamCMD
-      uses: CyberAndrii/setup-steamcmd@v1
-    - name: Get Latest Build ID
-      id: buildid
-      run: |
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: docker/login-action@v2
+        with:
+          registry: public.ecr.aws
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Setup SteamCMD
+        uses: CyberAndrii/setup-steamcmd@v1
+      - name: Get Latest Build ID
+        id: buildid
+        run: |
           BUILD_ID=$(steamcmd +login anonymous +app_info_update 1 +app_info_print "${{ env.APP_ID }}" +quit | grep -EA 1000 "^\s+\"branches\"$" | grep -EA 5 "^\s+\"public\"$" | grep -m 1 -EB 10 "^\s+}$" | grep -E "^\s+\"buildid\"\s+" | tr '[:blank:]"' ' ' | tr -s ' ' | cut -d' ' -f3)
           echo $BUILD_ID
           echo '::set-output name=buildid::'${BUILD_ID}
-    - name: Build, tag, and push image to Amazon ECR
-      if: github.ref == 'refs/heads/main'
-      env:
-        ECR_REGISTRY: public.ecr.aws/r0w6f3t3
-        ECR_REPOSITORY: vrising
-        IMAGE_TAG_BUILD: ${{ steps.buildid.outputs.buildid }}
-        IMAGE_TAG_BRANCH: ${{ github.ref_name }}
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:build-$IMAGE_TAG_BUILD .
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:branch-$IMAGE_TAG_BRANCH .
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
-        docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
-    - name: Build, tag, and push image to Amazon ECR
-      if: github.ref != 'refs/heads/main'
-      env:
-        ECR_REGISTRY: public.ecr.aws/r0w6f3t3
-        ECR_REPOSITORY: vrising
-        IMAGE_TAG: ${{ github.ref_name }}
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:branch-${IMAGE_TAG} .
-        docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
+      - name: Build, tag, and push image to Amazon ECR
+        if: github.ref == 'refs/heads/main'
+        env:
+          ECR_REGISTRY: public.ecr.aws/ponjimon
+          ECR_REPOSITORY: vrising
+          IMAGE_TAG_BUILD: ${{ steps.buildid.outputs.buildid }}
+          IMAGE_TAG_BRANCH: ${{ github.ref_name }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:build-$IMAGE_TAG_BUILD .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:branch-$IMAGE_TAG_BRANCH .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
+      - name: Build, tag, and push image to Amazon ECR
+        if: github.ref != 'refs/heads/main'
+        env:
+          ECR_REGISTRY: public.ecr.aws/ponjimon
+          ECR_REPOSITORY: vrising
+          IMAGE_TAG: ${{ github.ref_name }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:branch-${IMAGE_TAG} .
+          docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY

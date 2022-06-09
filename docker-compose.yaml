@@ -2,7 +2,7 @@ version: "3"
 
 services: 
   vrising: 
-    image: public.ecr.aws/r0w6f3t3/vrising:latest
+    image: public.ecr.aws/ponjimon/vrising:latest
     volumes: 
       - $HOME/vrising-server:/vrising/server-data
     ports: 
