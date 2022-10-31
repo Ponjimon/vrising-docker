@@ -2,9 +2,8 @@ name: Check Update
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: "*/5 * * * *"
   workflow_dispatch:
-
 
 env:
   APP_ID: 1829350
@@ -21,7 +20,7 @@ jobs:
           echo $(steamcmd +login anonymous +app_info_update 1 +app_info_print "${{ env.APP_ID }}" +quit | grep -EA 1000 "^\s+\"branches\"$" | grep -EA 5 "^\s+\"public\"$" | grep -m 1 -EB 10 "^\s+}$" | grep -E "^\s+\"buildid\"\s+" | tr '[:blank:]"' ' ' | tr -s ' ' | cut -d' ' -f3) > data.json
       - name: Fetch Cache
         id: cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: data.json
           key: ${{ hashFiles('data.json') }}
