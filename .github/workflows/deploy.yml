@@ -21,7 +21,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -41,6 +41,7 @@ jobs:
           BUILD_ID=$(steamcmd +login anonymous +app_info_update 1 +app_info_print "${{ env.APP_ID }}" +quit | grep -EA 1000 "^\s+\"branches\"$" | grep -EA 5 "^\s+\"public\"$" | grep -m 1 -EB 10 "^\s+}$" | grep -E "^\s+\"buildid\"\s+" | tr '[:blank:]"' ' ' | tr -s ' ' | cut -d' ' -f3)
           echo $BUILD_ID
           echo '::set-output name=buildid::'${BUILD_ID}
+          echo "buildid=${BUILD_ID}" >> $GITHUB_OUTPUT
       - name: Build, tag, and push image to Amazon ECR
         if: github.ref == 'refs/heads/main'
         env:
