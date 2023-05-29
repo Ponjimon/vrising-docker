@@ -10,6 +10,7 @@ RUN mkdir -p $INSTALL_DIR
 ARG APPID=1829350
 ARG STEAM_BETAS
 RUN steamcmd \
+        +@sSteamCmdForcePlatformType windows \
         +force_install_dir $INSTALL_DIR \
         +login anonymous \
         +app_update $APPID $STEAM_BETAS validate \
